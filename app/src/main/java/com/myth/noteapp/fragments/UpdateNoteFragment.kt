@@ -46,15 +46,15 @@ class UpdateNoteFragment : Fragment(R.layout.fragment_update_note) {
         noteViewModel = (activity as MainActivity).noteViewModel
         currentNote = args.note!!
 
-        binding?.etNoteTitleUpdate?.setText(currentNote.noteTitle)
-        binding?.etNoteBodyUpdate?.setText(currentNote.noteBody)
+        binding?.etNoteTitleUpdate!!.setText(currentNote.noteTitle)
+        binding?.etNoteBodyUpdate!!.setText(currentNote.noteBody)
 
         binding?.fabDone!!.setOnClickListener {
-            val title = binding?.etNoteTitleUpdate?.text.toString().trim()
-            val body = binding?.etNoteBodyUpdate?.text.toString().trim()
+            val title = binding?.etNoteTitleUpdate!!.text.toString().trim()
+            val body = binding?.etNoteBodyUpdate!!.text.toString().trim()
 
             if (title.isNotEmpty()) {
-                val note = Note(currentNote.id, currentNote.noteTitle, currentNote.noteBody)
+                val note = Note(currentNote.id, title, body)
 
                 noteViewModel.updateNote(note)
                 view.findNavController().navigate(R.id.action_updateNoteFragment_to_homeFragment)

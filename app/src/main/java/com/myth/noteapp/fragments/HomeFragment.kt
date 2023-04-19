@@ -84,6 +84,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
     }
 
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.home_menu, menu)
@@ -110,7 +111,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
     }
 
     private fun searchNote(query: String) {
-        val searchQuery = "$query"
+        val searchQuery = query
         noteViewModel.searchNotes(searchQuery).observe(
             viewLifecycleOwner
         ) { list -> noteAdapter.differ.submitList(list) }
