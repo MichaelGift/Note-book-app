@@ -3,7 +3,7 @@ package com.myth.noteapp.fragments
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import android.widget.SearchView
+import androidx.appcompat.widget.SearchView
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.myth.noteapp.MainActivity
@@ -88,10 +88,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
         menu.clear()
         inflater.inflate(R.menu.home_menu, menu)
 
-        val mMenuSearch = menu.findItem(R.id.menu_search)?.actionView as? SearchView
+        val mMenuSearch = menu.findItem(R.id.menu_search).actionView as SearchView
 
-        mMenuSearch?.isSubmitButtonEnabled = false
-        mMenuSearch?.setOnQueryTextListener(this)
+        mMenuSearch.isSubmitButtonEnabled = false
+        mMenuSearch.setOnQueryTextListener(this)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -112,9 +112,8 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
     private fun searchNote(query: String) {
         val searchQuery = "$query"
         noteViewModel.searchNotes(searchQuery).observe(
-            this,
-            {list->noteAdapter.differ.submitList(list)}
-        )
+            viewLifecycleOwner
+        ) { list -> noteAdapter.differ.submitList(list) }
     }
 
     override fun onDestroy() {
