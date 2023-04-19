@@ -99,7 +99,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
         if (query != null) {
             searchNote(query)
         }
-        return false
+        return true
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
