@@ -1,33 +1,29 @@
 package com.myth.noteapp.fragments
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.widget.SearchView
+import androidx.navigation.findNavController
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.myth.noteapp.MainActivity
 import com.myth.noteapp.R
+import com.myth.noteapp.adapter.NoteAdapter
+import com.myth.noteapp.databinding.FragmentHomeBinding
+import com.myth.noteapp.model.Note
+import com.myth.noteapp.viewmodel.NoteViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextListener {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var _binding : FragmentHomeBinding? = null
+    private val binding get() = _binding
+
+    private lateinit var noteViewModel : NoteViewModel
+    private lateinit var noteAdapter: NoteAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -35,26 +31,95 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+
+        return binding?.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        noteViewModel = (activity as MainActivity).noteViewModel
+
+        setUpRecyclerView()
+        binding?.fabAddNote!!.setOnClickListener{
+            it.findNavController().navigate(
+                R.id.action_homeFragment_to_newNoteFragment
+            )
+        }
     }
+
+    private fun setUpRecyclerView() {
+        noteAdapter = NoteAdapter()
+
+        binding?.recyclerView?.apply {
+            layoutManager = StaggeredGridLayoutManager(
+                2,
+                StaggeredGridLayoutManager.VERTICAL
+            )
+            setHasFixedSize(true)
+            adapter = noteAdapter
+        }
+
+        activity?.let {
+            noteViewModel.getAllNotes().observe(
+                viewLifecycleOwner
+            ) { note ->
+                noteAdapter.differ.submitList(note)
+                updateUI(note)
+            }
+        }
+    }
+
+    private fun updateUI(note: List<Note>?) {
+        if (note != null) {
+            if(note.isNotEmpty()){
+                binding?.cardView!!.visibility = View.GONE
+                binding?.recyclerView!!.visibility =View.VISIBLE
+
+            }else {
+                binding?.cardView!!.visibility = View.VISIBLE
+                binding?.recyclerView!!.visibility =View.GONE
+            }
+        }
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.home_menu, menu)
+
+        val mMenuSearch = menu.findItem(R.id.menu_search)?.actionView as? SearchView
+
+        mMenuSearch?.isSubmitButtonEnabled = false
+        mMenuSearch?.setOnQueryTextListener(this)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        if (query != null) {
+            searchNote(query)
+        }
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        if(newText != null){
+            searchNote(newText)
+        }
+        return true
+    }
+
+    private fun searchNote(query: String) {
+        val searchQuery = "$query"
+        noteViewModel.searchNotes(searchQuery).observe(
+            this,
+            {list->noteAdapter.differ.submitList(list)}
+        )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
 }

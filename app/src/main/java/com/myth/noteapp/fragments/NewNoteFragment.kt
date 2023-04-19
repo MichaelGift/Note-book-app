@@ -1,59 +1,91 @@
 package com.myth.noteapp.fragments
 
 import android.os.Bundle
+import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.navigation.findNavController
+import com.myth.noteapp.MainActivity
+import com.myth.noteapp.R
+import com.myth.noteapp.adapter.NoteAdapter
+import com.myth.noteapp.databinding.FragmentNewNoteBinding
+import com.myth.noteapp.model.Note
+import com.myth.noteapp.viewmodel.NoteViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class NewNoteFragment : Fragment(R.layout.fragment_new_note) {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [NewNoteFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class NewNoteFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var _binding: FragmentNewNoteBinding? = null
+    private val binding get() = _binding
+
+    private lateinit var noteViewModel: NoteViewModel
+    private lateinit var noteAdapter: NoteAdapter
+
+    private lateinit var mView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_new_note, container, false)
+        _binding = FragmentNewNoteBinding.inflate(inflater, container, false)
+
+        return binding?.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment NewNoteFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            NewNoteFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        noteViewModel = (activity as MainActivity).noteViewModel
+
+        mView = view
+    }
+
+    private fun saveNote(view: View) {
+        val noteTitle = binding?.etMoteTitle!!.text.toString().trim()
+        val noteBody = binding?.etNoteBody!!.text.toString().trim()
+
+        if (noteTitle.isNotEmpty()) {
+            val note = Note(0, noteTitle, noteBody)
+
+            noteViewModel.addNote(note)
+
+            Toast.makeText(
+                mView.context,
+                "Saved",
+                Toast.LENGTH_LONG
+            ).show()
+
+            view.findNavController().navigate(R.id.action_newNoteFragment_to_homeFragment)
+        } else {
+            Toast.makeText(
+                mView.context,
+                "Please Enter note Title",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_new_note, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_save -> {
+                saveNote(mView)
             }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }
