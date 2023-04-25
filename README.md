@@ -16,6 +16,7 @@ https://user-images.githubusercontent.com/120593172/234131898-2cfcbde7-b64c-455b
 ---
 - MVVM
 - Room
+- Navigation Graph
 
 ## How to run project
 ---
