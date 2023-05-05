@@ -11,6 +11,11 @@ https://user-images.githubusercontent.com/120593172/234132633-de007933-6aa6-4aba
 
 https://user-images.githubusercontent.com/120593172/234131898-2cfcbde7-b64c-455b-818a-ff800765cace.mp4
 
+## Coming soon
+- Themes
+- Settings
+- Export and Share
+- Reminders
 
 ## Tech Stack
 ---
