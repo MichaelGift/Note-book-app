@@ -18,7 +18,6 @@ class NewNoteFragment : Fragment(R.layout.fragment_new_note) {
     private val binding get() = _binding
 
     private lateinit var noteViewModel: NoteViewModel
-    private lateinit var noteAdapter: NoteAdapter
 
     private lateinit var mView: View
 
