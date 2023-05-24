@@ -2,8 +2,8 @@ package com.myth.noteapp.fragments
 
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.myth.noteapp.MainActivity
@@ -15,10 +15,10 @@ import com.myth.noteapp.viewmodel.NoteViewModel
 
 class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextListener {
 
-    private var _binding : FragmentHomeBinding? = null
+    private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding
 
-    private lateinit var noteViewModel : NoteViewModel
+    private lateinit var noteViewModel: NoteViewModel
     private lateinit var noteAdapter: NoteAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +41,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
         noteViewModel = (activity as MainActivity).noteViewModel
 
         setUpRecyclerView()
-        binding?.fabAddNote!!.setOnClickListener{
+        binding?.fabAddNote!!.setOnClickListener {
             it.findNavController().navigate(
                 R.id.action_homeFragment_to_newNoteFragment
             )
@@ -72,13 +72,13 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
 
     private fun updateUI(note: List<Note>?) {
         if (note != null) {
-            if(note.isNotEmpty()){
+            if (note.isNotEmpty()) {
                 binding?.cardView!!.visibility = View.GONE
-                binding?.recyclerView!!.visibility =View.VISIBLE
+                binding?.recyclerView!!.visibility = View.VISIBLE
 
-            }else {
+            } else {
                 binding?.cardView!!.visibility = View.VISIBLE
-                binding?.recyclerView!!.visibility =View.GONE
+                binding?.recyclerView!!.visibility = View.GONE
             }
         }
     }
@@ -89,11 +89,24 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
         menu.clear()
         inflater.inflate(R.menu.home_menu, menu)
 
-        val mMenuSearch = menu.findItem(R.id.menu_search).actionView as androidx.appcompat.widget.SearchView
+        val mMenuSearch =
+            menu.findItem(R.id.menu_search).actionView as androidx.appcompat.widget.SearchView
 
         mMenuSearch.isSubmitButtonEnabled = false
         mMenuSearch.setOnQueryTextListener(this)
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.backUpData -> {
+                noteViewModel.backUpDatabase()
+            }
+            R.id.restoreData ->{
+                noteViewModel.restoreDatabase()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
@@ -104,7 +117,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        if(newText != null){
+        if (newText != null) {
             searchNote(newText)
         }
         return true

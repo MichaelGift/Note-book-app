@@ -8,4 +8,12 @@
         android:title="Search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/backUpData"
+        android:title="Backup" />
+    <item
+        android:id="@+id/restoreData"
+        android:title="Restore" />
+
 </menu>

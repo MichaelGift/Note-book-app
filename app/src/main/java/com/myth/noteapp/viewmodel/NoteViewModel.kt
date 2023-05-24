@@ -30,4 +30,12 @@ class NoteViewModel(
     fun getAllNotes() = noteRepository.getAllNotes()
 
     fun searchNotes(query: String) = noteRepository.searchNote(query)
+
+    fun backUpDatabase() = viewModelScope.launch {
+        noteRepository.backUpDatabase()
+    }
+
+    fun restoreDatabase() = viewModelScope.launch {
+        noteRepository.restoreDatabase()
+    }
 }
